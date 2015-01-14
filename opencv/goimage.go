@@ -1,6 +1,8 @@
 package opencv
 
 import (
+	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"unsafe"
@@ -58,10 +60,10 @@ func FromImageUnsafe(img *image.RGBA) *IplImage {
 }
 
 /* ToImage converts a opencv.IplImage to an go image.Image */
-func (img *IplImage) ToImage() image.Image {
+func (img *IplImage) ToImage() (image.Image, error) {
 	out := image.NewNRGBA(image.Rect(0, 0, img.Width(), img.Height()))
 	if img.Depth() != IPL_DEPTH_8U {
-		return nil // TODO return error
+		return nil, errors.New(fmt.Sprintf("Invalid image depth: %d", img.Depth()))
 	}
 
 	for y := 0; y < img.Height(); y++ {
@@ -75,5 +77,5 @@ func (img *IplImage) ToImage() image.Image {
 		}
 	}
 
-	return out
+	return out, nil
 }
